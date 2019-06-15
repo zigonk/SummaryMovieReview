@@ -2,12 +2,11 @@ package com.example.summarymoviereview;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-<<<<<<< HEAD
-=======
+
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
->>>>>>> 19ec1670f243f5930bcfa3ef819cb94ecdbf02a9
+
 
 public class MainActivity extends AppCompatActivity {
 
