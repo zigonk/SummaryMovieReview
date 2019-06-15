@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -99,41 +100,60 @@ public class NetworkUtils {
 
     }
 
-    public static class DownloadPosterTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView mImageView;
+    public static class DownloadPosterTask extends AsyncTask<String, Void, ArrayList<Bitmap>> {
+//        ImageView mImageView;
+    private UpdateBackdrops mUpdateBackdrops;
 
-        DownloadPosterTask(ImageView imageView) {
-            mImageView = imageView;
+
+
+        DownloadPosterTask(UpdateBackdrops UpdateBackdrops) {
+            mUpdateBackdrops = UpdateBackdrops;
         }
 
         @Override
-        protected Bitmap doInBackground(String... strings) {
+        protected ArrayList<Bitmap> doInBackground(String... strings) {
             if (strings == null) return null;
-            String posterUrl = IMAGE_BASE_URL + strings[0];
-            Bitmap bitmap = null;
-            try {
-                InputStream in = new java.net.URL(posterUrl).openStream();
-                bitmap = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                e.printStackTrace();
+            ArrayList<Bitmap> bitmaps = new ArrayList<>();
+            for (String s : strings) {
+                String posterUrl = IMAGE_BASE_URL + s;
+                Bitmap bitmap = null;
+                try {
+                    InputStream in = new java.net.URL(posterUrl).openStream();
+                    bitmap = BitmapFactory.decodeStream(in);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                bitmaps.add(bitmap);
+
             }
-            return bitmap;
+            return bitmaps;
         }
 
         @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            mImageView.setImageBitmap(bitmap);
+        protected void onPostExecute(ArrayList<Bitmap> bitmap) {
+            mUpdateBackdrops.updateBackdrops(bitmap);
+//            mImageView.setImageBitmap(bitmap);
         }
     }
 
+
+
     public static class FetchMovieByTitle extends AsyncTask<String, Void, ArrayList<MovieObject>> {
+
+        private int mPage;
+        private UpdateSearchResult mUpdateSearchResults;
+
+        public FetchMovieByTitle(UpdateSearchResult updateSearchResults , int page) {
+            mPage = page;
+            mUpdateSearchResults = updateSearchResults;
+        }
 
         @Override
         protected ArrayList<MovieObject> doInBackground(String... strings) {
             if (strings.length == 0) return null;
 
             String query = strings[0];
-            URL searchUrl = buildGetMovieByTitle(query, 1);
+            URL searchUrl = buildGetMovieByTitle(query, mPage);
 
             try {
                 String response = getResponseFromHttpUrl(searchUrl);
@@ -151,7 +171,8 @@ public class NetworkUtils {
         protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
             if (movieObjects == null) ;
             else {
-                Log.d("MovieTitle", movieObjects.get(0).tilte);
+                Log.d("PostExcute", String.valueOf(movieObjects.size()));
+                mUpdateSearchResults.update(movieObjects);
             }
         }
     }
