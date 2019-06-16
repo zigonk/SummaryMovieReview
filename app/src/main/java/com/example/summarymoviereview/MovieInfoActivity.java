@@ -1,16 +1,22 @@
 package com.example.summarymoviereview;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
+import java.util.ArrayList;
+
 
 public class MovieInfoActivity extends AppCompatActivity {
     private FrameLayout mLeftLayout;
+    private FrameLayout mRightLayout;
     private MovieObject mMovieObject;
+    private ArrayList<ReviewObject> mReviews;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,22 +26,20 @@ public class MovieInfoActivity extends AppCompatActivity {
         mMovieObject = (MovieObject) intent.getSerializableExtra(MovieInfoAdapter.MOVIE_OBJECT_INTENT);
 
 
-//        ArrayList<Tag> tags = new ArrayList<>();
-//        for (int i = 0; i < 10; i++) {
-//            if (i % 3 == 0)
-//                tags.add(new Tag("Oscar"));
-//            else if (i % 2 == 0)
-//                tags.add(new Tag("Not oscars"));
-//            else
-//                tags.add(new Tag("Fucking Long Text, I don't Know"));
-//        }
-//        TagView oscar = findViewById(R.id.movie_info_oscar);
-//        oscar.addTags(tags);
-//
+
         mLeftLayout = findViewById(R.id.left_layout);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.replace(R.id.left_layout, MovieInfoFragment.newInstance(mMovieObject));
+
+        if ((getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK) ==
+                Configuration.SCREENLAYOUT_SIZE_LARGE) {
+            mRightLayout = findViewById(R.id.right_layout);
+            fragmentTransaction.replace(R.id.right_layout, ReviewFragment.newInstance(mMovieObject.ID));
+        }
         fragmentTransaction.commit();
+
+
     }
 }

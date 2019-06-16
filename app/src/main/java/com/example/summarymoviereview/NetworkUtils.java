@@ -174,12 +174,18 @@ public class NetworkUtils {
 
     public static class FetchReviewByMovieId extends AsyncTask<Integer, Void, ArrayList<ReviewObject>> {
 
+        private ReviewFragment.UpdateReviewList mUpdateReviewList;
+
+        public FetchReviewByMovieId(ReviewFragment.UpdateReviewList updateReviewList) {
+            mUpdateReviewList = updateReviewList;
+        }
+
         @Override
         protected ArrayList<ReviewObject> doInBackground(Integer... integers) {
             if (integers.length == 0) return null;
             Integer query = integers[0];
             URL reviewsUrl = buildGetMovieReview(query);
-
+            Log.d("URL", String.valueOf(reviewsUrl));
             try {
                 String response = getResponseFromHttpUrl(reviewsUrl);
                 return JsonUtils.convertJsonToReviewObjectList(response);
@@ -194,10 +200,8 @@ public class NetworkUtils {
 
         @Override
         protected void onPostExecute(ArrayList<ReviewObject> reviewObjects) {
-            if (reviewObjects == null) ;
-            else {
-                Log.d("Review content", reviewObjects.get(0).content);
-            }
+            mUpdateReviewList.update(reviewObjects);
+            Log.d("Finish_Download_Review", String.valueOf(reviewObjects.size()));
         }
     }
 

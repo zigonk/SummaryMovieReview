@@ -2,9 +2,10 @@ package com.example.summarymoviereview;
 
 import com.google.api.services.language.v1beta2.model.Entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ReviewObject {
+public class ReviewObject implements Serializable {
     public String ID;
     public String author;
     public String content;

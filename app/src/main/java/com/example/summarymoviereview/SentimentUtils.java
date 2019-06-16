@@ -32,6 +32,12 @@ public class SentimentUtils {
 
     public class SentimentReview extends AsyncTask<ReviewObject, Void, ReviewObject> {
 
+        private UpdateSentiment mUpdateSentiment;
+
+        public SentimentReview(UpdateSentiment updateSentiment) {
+            mUpdateSentiment = updateSentiment;
+        }
+
         @Override
         protected ReviewObject doInBackground(ReviewObject... reviewObjects) {
             if (reviewObjects.length == 0) return null;
@@ -60,6 +66,7 @@ public class SentimentUtils {
         @Override
         protected void onPostExecute(ReviewObject reviewObject) {
             super.onPostExecute(reviewObject);
+            mUpdateSentiment.updateSentiment(reviewObject);
         }
     }
 
