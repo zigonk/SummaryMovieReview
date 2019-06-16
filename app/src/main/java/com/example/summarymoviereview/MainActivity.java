@@ -9,10 +9,10 @@ import android.view.MenuInflater;
 import android.widget.SearchView;
 
 
+
 public class MainActivity extends AppCompatActivity {
 
     private SearchView mSearchView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,5 +35,4 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setQueryHint(getString(R.string.search_hint));
         return super.onCreateOptionsMenu(menu);
     }
-
 }
