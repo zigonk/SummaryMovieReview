@@ -2,7 +2,9 @@ package com.example.summarymoviereview;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,8 +28,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.logo_with_padding);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
         mUpdateTrending = new UpdateSearchResult() {
             @Override
             public void update(ArrayList<MovieObject> result) {

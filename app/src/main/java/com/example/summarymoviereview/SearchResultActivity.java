@@ -3,6 +3,7 @@ package com.example.summarymoviereview;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,7 +25,9 @@ public class SearchResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
         Log.d(SearchResultActivity.class.getSimpleName(), "Result Start");
-
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.logo_with_padding);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
         Intent intent = getIntent();
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
