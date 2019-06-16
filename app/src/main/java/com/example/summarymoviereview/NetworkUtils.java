@@ -204,4 +204,28 @@ public class NetworkUtils {
             }
         }
     }
+
+    public static class FetchTrendingMovie extends AsyncTask<Void ,Void, ArrayList<MovieObject>> {
+
+        @Override
+        protected ArrayList<MovieObject> doInBackground(Void... voids) {
+            URL searchUrl = buildGetMovieTrendingUrl("movie", "all");
+
+            try {
+                String response = getResponseFromHttpUrl(searchUrl);
+                return JsonUtils.convertJsonToMovieObjectList(response);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
+            super.onPostExecute(movieObjects);
+        }
+    }
 }
