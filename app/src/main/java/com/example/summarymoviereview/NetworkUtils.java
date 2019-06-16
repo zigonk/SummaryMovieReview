@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -100,22 +99,23 @@ public class NetworkUtils {
 
     }
 
-    public static class DownloadPosterTask extends AsyncTask<String, Void, ArrayList<Bitmap>> {
-//        ImageView mImageView;
-    private UpdateBackdrops mUpdateBackdrops;
+    public static class DownloadPosterTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView mImageView;
+        private UpdateBackdrops mUpdateBackdrop;
+        private int mPosition;
 
 
-
-        DownloadPosterTask(UpdateBackdrops UpdateBackdrops) {
-            mUpdateBackdrops = UpdateBackdrops;
+        DownloadPosterTask(ImageView imageView, UpdateBackdrops updateBackdrops, int i) {
+            mImageView = imageView;
+            mUpdateBackdrop = updateBackdrops;
+            mPosition = i;
         }
 
         @Override
-        protected ArrayList<Bitmap> doInBackground(String... strings) {
+        protected Bitmap doInBackground(String... strings) {
             if (strings == null) return null;
             ArrayList<Bitmap> bitmaps = new ArrayList<>();
-            for (String s : strings) {
-                String posterUrl = IMAGE_BASE_URL + s;
+            String posterUrl = IMAGE_BASE_URL + strings[0];
                 Bitmap bitmap = null;
                 try {
                     InputStream in = new java.net.URL(posterUrl).openStream();
@@ -123,15 +123,14 @@ public class NetworkUtils {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                bitmaps.add(bitmap);
-
-            }
-            return bitmaps;
+            return bitmap;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Bitmap> bitmap) {
-            mUpdateBackdrops.updateBackdrops(bitmap);
+        protected void onPostExecute(Bitmap bitmap) {
+//            mUpdateBackdrops.updateBackdrops(bitmap);
+            mUpdateBackdrop.updateBackdrops(bitmap, mPosition);
+            mUpdateBackdrop.updateBackdropOfImageView();
 //            mImageView.setImageBitmap(bitmap);
         }
     }
