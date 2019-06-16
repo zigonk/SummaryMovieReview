@@ -1,5 +1,6 @@
 package com.example.summarymoviereview;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -13,19 +14,36 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.ViewHolder> {
 
+    private TreeMap<Integer, Bitmap> mBitmaps;
     private ArrayList<MovieObject> mMovies;
-    private ArrayList<Bitmap> mBackdrops;
+    private Context mContext;
+    private UpdateBackdrops mUpdateBackdrop;
 
-    public void update(ArrayList<MovieObject> movies) {
+    public MovieInfoAdapter(Context context, ArrayList<MovieObject> movies) {
         mMovies = movies;
+        mContext = context;
+        mBitmaps = new TreeMap<>();
+
+        mUpdateBackdrop = new UpdateBackdrops() {
+            @Override
+            public void updateBackdropOfImageView() {
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void updateBackdrops(Bitmap result, int position) {
+                mBitmaps.put(position, result);
+            }
+        };
     }
 
-    public MovieInfoAdapter(ArrayList<MovieObject> movies, ArrayList<Bitmap> backdrops) {
+    public void updateMovies(ArrayList<MovieObject> movies) {
         mMovies = movies;
-        mBackdrops = backdrops;
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -53,16 +71,20 @@ public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.View
     @Override
     public void onBindViewHolder(@NonNull MovieInfoAdapter.ViewHolder viewHolder, int i) {
         MovieObject movieObject = mMovies.get(i);
-        Log.d(MovieInfoAdapter.class.getSimpleName(), String.valueOf(movieObject.tilte));
-        Bitmap backdrop = null;
-        if (mBackdrops != null)
-             backdrop = mBackdrops.get(i);
-        viewHolder.mRatingBar.setRating((float) movieObject.rating.doubleValue());
+        Log.d("Movie Info", String.valueOf(movieObject.tilte));
+        Log.d("Movie Info", String.valueOf(movieObject.rating));
+        Log.d("Movie Info", String.valueOf(movieObject.backdropPath));
+        viewHolder.mRatingBar.setRating((float) movieObject.rating.doubleValue() / 2);
         viewHolder.mTitleTextView.setText(movieObject.tilte);
-        if (backdrop != null)
-            viewHolder.mBackdropImageView.setImageBitmap(backdrop);
+        viewHolder.mTitleTextView.setTextColor(Color.parseColor("#FFFFFF"));
+        viewHolder.mBackdropImageView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+
+        if (mBitmaps.containsKey(i)) {
+            viewHolder.mBackdropImageView.setImageBitmap(mBitmaps.get(i));
+        } else if (!movieObject.backdropPath.equals("null"))
+            new NetworkUtils.DownloadPosterTask(viewHolder.mBackdropImageView, mUpdateBackdrop, i).execute(movieObject.backdropPath);
         else
-            viewHolder.mBackdropImageView.setBackgroundColor(Color.parseColor("#000000"));
+            viewHolder.mTitleTextView.setTextColor(Color.parseColor("#000000"));
     }
 
     @Override
