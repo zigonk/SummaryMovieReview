@@ -1,11 +1,11 @@
 package com.example.summarymoviereview;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +18,7 @@ import java.util.TreeMap;
 
 public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.ViewHolder> {
 
+    public static final String MOVIE_OBJECT_INTENT = "movie_object_intent";
     private TreeMap<Integer, Bitmap> mBitmaps;
     private ArrayList<MovieObject> mMovies;
     private Context mContext;
@@ -58,6 +59,15 @@ public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.View
             mBackdropImageView = v.findViewById(R.id.movie_cardview_backdrop);
             mRatingBar = v.findViewById(R.id.movie_cardview_ratingbar);
             mTitleTextView = v.findViewById(R.id.movie_cardview_title);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    Intent intent = new Intent(mContext, MovieInfoActivity.class);
+                    intent.putExtra(MOVIE_OBJECT_INTENT, mMovies.get(pos));
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 

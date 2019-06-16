@@ -26,7 +26,7 @@ public class MovieInfoFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String MOVIE_OBJECT_PARAM = "param1";
 
-    // TODO: Rename and change types of parameters
+
     private MovieObject mMovieObject;
 
 //    private OnFragmentInteractionListener mListener;
@@ -35,19 +35,11 @@ public class MovieInfoFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MovieInfoFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+
     public static MovieInfoFragment newInstance(MovieObject movieObject) {
         MovieInfoFragment fragment = new MovieInfoFragment();
         Bundle args = new Bundle();
-        args.putString(MOVIE_OBJECT_PARAM, movieObject);
+        args.putSerializable(MOVIE_OBJECT_PARAM, movieObject);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,7 +48,7 @@ public class MovieInfoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mMovieObject = (MovieObject) getArguments().get(MOVIE_OBJECT_PARAM);
+            mMovieObject = (MovieObject) getArguments().getSerializable(MOVIE_OBJECT_PARAM);
         }
     }
 

@@ -1,8 +1,9 @@
 package com.example.summarymoviereview;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class MovieObject {
+public class MovieObject implements Serializable {
     public int ID;
     public String tilte;
     public String posterPath;
