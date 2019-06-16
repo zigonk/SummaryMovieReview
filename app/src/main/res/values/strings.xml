@@ -2,4 +2,9 @@
     <string name="app_name">SummaryMovieReview</string>
     <string name="search_hint">Search movies</string>
     <string name="hot_trend">Hot Trend</string>
+    <string name="summary">Summary</string>
+    <string name="oscar">Why does this film deserve Oscars?</string>
+    <string name="razzies">Why does this film deserve Razzies?</string>
+    <string name="user_reviews">User Reviews</string>
+    <string name="see_all">See All</string>
 </resources>
