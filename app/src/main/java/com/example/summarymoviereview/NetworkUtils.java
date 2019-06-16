@@ -99,12 +99,12 @@ public class NetworkUtils {
 
     }
 
-    public static class DownloadPosterTask extends AsyncTask<String, Void, Bitmap> {
+    public static class downloadBackdropMovieList extends AsyncTask<String, Void, Bitmap> {
         private UpdateBackdrops mUpdateBackdrop;
         private int mPosition;
 
 
-        DownloadPosterTask(UpdateBackdrops updateBackdrops, int i) {
+        downloadBackdropMovieList(UpdateBackdrops updateBackdrops, int i) {
             mUpdateBackdrop = updateBackdrops;
             mPosition = i;
         }

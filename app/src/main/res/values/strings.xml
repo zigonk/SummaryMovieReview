@@ -7,7 +7,7 @@
     <string name="razzies">Why does this film deserve Razzies?</string>
     <string name="user_reviews">User Reviews</string>
     <string name="see_all">See All</string>
+    <string name="user">User</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

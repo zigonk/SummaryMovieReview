@@ -99,7 +99,7 @@ public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.View
             viewHolder.mBackdropImageView.setImageBitmap(mBitmaps.get(i));
             viewHolder.id = i;
         } else if (!mBitmaps.containsKey(i) && !movieObject.backdropPath.equals("null")) {
-            new NetworkUtils.DownloadPosterTask(mUpdateBackdrop, i).execute(movieObject.backdropPath);
+            new NetworkUtils.downloadBackdropMovieList(mUpdateBackdrop, i).execute(movieObject.backdropPath);
         }
         else if (movieObject.backdropPath.equals("null")) {
             viewHolder.mTitleTextView.setTextColor(Color.parseColor("#000000"));
