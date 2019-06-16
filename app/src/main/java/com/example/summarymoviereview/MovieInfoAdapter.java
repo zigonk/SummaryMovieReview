@@ -10,8 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
+
+import com.willy.ratingbar.ScaleRatingBar;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -49,7 +50,7 @@ public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.View
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView mBackdropImageView;
-        private RatingBar mRatingBar;
+        private ScaleRatingBar mRatingBar;
         private TextView mTitleTextView;
         private int id = -1;
 
