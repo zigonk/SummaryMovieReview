@@ -42,7 +42,7 @@ public class SearchResultActivity extends AppCompatActivity {
         mResultRecyclerView.setAdapter(mResultAdapter);
         mResultRecyclerView.setLayoutManager(layout);
         mResultRecyclerView.setHasFixedSize(true);
-        mResultRecyclerView.setItemViewCacheSize(20);
+//        mResultRecyclerView.setItemViewCacheSize(20);
 
 
 

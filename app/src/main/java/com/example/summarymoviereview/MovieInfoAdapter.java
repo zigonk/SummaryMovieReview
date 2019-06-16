@@ -50,6 +50,7 @@ public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.View
         private ImageView mBackdropImageView;
         private RatingBar mRatingBar;
         private TextView mTitleTextView;
+        private int id = -1;
 
 
         public ViewHolder(View v) {
@@ -71,20 +72,23 @@ public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.View
     @Override
     public void onBindViewHolder(@NonNull MovieInfoAdapter.ViewHolder viewHolder, int i) {
         MovieObject movieObject = mMovies.get(i);
-        Log.d("Movie Info", String.valueOf(movieObject.tilte));
-        Log.d("Movie Info", String.valueOf(movieObject.rating));
-        Log.d("Movie Info", String.valueOf(movieObject.backdropPath));
         viewHolder.mRatingBar.setRating((float) movieObject.rating.doubleValue() / 2);
         viewHolder.mTitleTextView.setText(movieObject.tilte);
-        viewHolder.mTitleTextView.setTextColor(Color.parseColor("#FFFFFF"));
-        viewHolder.mBackdropImageView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-
-        if (mBitmaps.containsKey(i)) {
+        if (viewHolder.id != i) {
+            viewHolder.mTitleTextView.setTextColor(Color.parseColor("#FFFFFF"));
+            viewHolder.mBackdropImageView.setImageBitmap(null);
+            viewHolder.mBackdropImageView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        }
+        if (mBitmaps.containsKey(i) && viewHolder.id != i) {
             viewHolder.mBackdropImageView.setImageBitmap(mBitmaps.get(i));
-        } else if (!movieObject.backdropPath.equals("null"))
+            viewHolder.id = i;
+        } else if (!mBitmaps.containsKey(i) && !movieObject.backdropPath.equals("null")) {
             new NetworkUtils.DownloadPosterTask(viewHolder.mBackdropImageView, mUpdateBackdrop, i).execute(movieObject.backdropPath);
-        else
+        }
+        else if (movieObject.backdropPath.equals("null")) {
             viewHolder.mTitleTextView.setTextColor(Color.parseColor("#000000"));
+            viewHolder.id = i;
+        }
     }
 
     @Override
