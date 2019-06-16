@@ -44,7 +44,12 @@ public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.View
     }
 
     public void updateMovies(ArrayList<MovieObject> movies) {
-        mMovies = movies;
+        ArrayList<MovieObject> filterMovies = new ArrayList<>();
+        for (int i = 0; i < movies.size(); i++) {
+            if (!movies.get(i).backdropPath.equals("null"))
+                filterMovies.add(movies.get(i));
+        }
+        mMovies = filterMovies;
         notifyDataSetChanged();
     }
 
@@ -94,7 +99,7 @@ public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.View
             viewHolder.mBackdropImageView.setImageBitmap(mBitmaps.get(i));
             viewHolder.id = i;
         } else if (!mBitmaps.containsKey(i) && !movieObject.backdropPath.equals("null")) {
-            new NetworkUtils.DownloadPosterTask(viewHolder.mBackdropImageView, mUpdateBackdrop, i).execute(movieObject.backdropPath);
+            new NetworkUtils.DownloadPosterTask(mUpdateBackdrop, i).execute(movieObject.backdropPath);
         }
         else if (movieObject.backdropPath.equals("null")) {
             viewHolder.mTitleTextView.setTextColor(Color.parseColor("#000000"));

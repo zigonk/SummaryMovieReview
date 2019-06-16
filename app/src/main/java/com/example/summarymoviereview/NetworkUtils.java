@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
 
 import org.json.JSONException;
 
@@ -15,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class NetworkUtils {
@@ -100,13 +100,11 @@ public class NetworkUtils {
     }
 
     public static class DownloadPosterTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView mImageView;
         private UpdateBackdrops mUpdateBackdrop;
         private int mPosition;
 
 
-        DownloadPosterTask(ImageView imageView, UpdateBackdrops updateBackdrops, int i) {
-            mImageView = imageView;
+        DownloadPosterTask(UpdateBackdrops updateBackdrops, int i) {
             mUpdateBackdrop = updateBackdrops;
             mPosition = i;
         }
@@ -128,10 +126,8 @@ public class NetworkUtils {
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-//            mUpdateBackdrops.updateBackdrops(bitmap);
             mUpdateBackdrop.updateBackdrops(bitmap, mPosition);
             mUpdateBackdrop.updateBackdropOfImageView();
-//            mImageView.setImageBitmap(bitmap);
         }
     }
 
@@ -207,10 +203,17 @@ public class NetworkUtils {
 
     public static class FetchTrendingMovie extends AsyncTask<Void ,Void, ArrayList<MovieObject>> {
 
+        private UpdateSearchResult mUpdateSearchResults;
+
+        public FetchTrendingMovie(UpdateSearchResult updateSearchResults) {
+            mUpdateSearchResults = updateSearchResults;
+        }
+
+
         @Override
         protected ArrayList<MovieObject> doInBackground(Void... voids) {
-            URL searchUrl = buildGetMovieTrendingUrl("movie", "all");
-
+            URL searchUrl = buildGetMovieTrendingUrl("movie", "day");
+            Log.d("URL", searchUrl.toString());
             try {
                 String response = getResponseFromHttpUrl(searchUrl);
                 return JsonUtils.convertJsonToMovieObjectList(response);
@@ -226,6 +229,13 @@ public class NetworkUtils {
         @Override
         protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
             super.onPostExecute(movieObjects);
+            movieObjects.sort(new Comparator<MovieObject>() {
+                @Override
+                public int compare(MovieObject o1, MovieObject o2) {
+                    return o2.releaseDate.compareTo(o1.releaseDate);
+                }
+            });
+            mUpdateSearchResults.update(movieObjects);
         }
     }
 }
