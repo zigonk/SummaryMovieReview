@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,16 +20,16 @@ public class ReviewFragment extends Fragment {
     private ReviewAdapter mReviewAdapter;
     private int mID;
 
-    private UpdateReviewList mUpdateReviewList;
+
 
     public ReviewFragment() {
         // Required empty public constructor
     }
 
-    public static ReviewFragment newInstance(int ID) {
+    public static ReviewFragment newInstance(ArrayList<ReviewObject> reviews) {
         ReviewFragment fragment = new ReviewFragment();
         Bundle args = new Bundle();
-        args.putInt(REVIEWS_PARAM, ID);
+        args.putSerializable(REVIEWS_PARAM, reviews);
         fragment.setArguments(args);
         return fragment;
     }
@@ -39,16 +38,9 @@ public class ReviewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mID = getArguments().getInt(REVIEWS_PARAM);
+            mReviews = (ArrayList<ReviewObject>) getArguments().getSerializable(REVIEWS_PARAM);
         }
 
-        mUpdateReviewList = new UpdateReviewList() {
-            @Override
-            public void update(ArrayList<ReviewObject> reviews) {
-                mReviews = reviews;
-                mReviewAdapter.updateData(reviews);
-            }
-        };
 
     }
 
@@ -66,14 +58,11 @@ public class ReviewFragment extends Fragment {
         mReviewLists.setAdapter(mReviewAdapter);
         mReviewLists.setLayoutManager(layoutManager);
 
-        Log.d("Review_Fragment", String.valueOf(mID));
-        new NetworkUtils.FetchReviewByMovieId(mUpdateReviewList).execute(mID);
-        Log.d("Review_Fragment", String.valueOf(mReviews));
+//        Log.d("Review_Fragment", String.valueOf(mID));
+
+//        Log.d("Review_Fragment", String.valueOf(mReviews));
         return v;
     }
 
-    public interface UpdateReviewList {
-        void update(ArrayList<ReviewObject> reviews);
-    }
 
 }

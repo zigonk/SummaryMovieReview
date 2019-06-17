@@ -1,6 +1,7 @@
 package com.example.summarymoviereview;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -19,9 +20,9 @@ import java.util.List;
 
 public class SentimentUtils {
 
-    private final String CLOUD_API_KEY = "AIzaSyAD4B8m4rOm0fGAP91leIgPaWFucXzOiVI";
+    private static final String CLOUD_API_KEY = "AIzaSyAD4B8m4rOm0fGAP91leIgPaWFucXzOiVI";
 
-    final CloudNaturalLanguage naturalLanguageService =
+    static final CloudNaturalLanguage naturalLanguageService =
             new CloudNaturalLanguage.Builder(
                     AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(),
@@ -30,12 +31,14 @@ public class SentimentUtils {
                     new CloudNaturalLanguageRequestInitializer(CLOUD_API_KEY)
             ).build();
 
-    public class SentimentReview extends AsyncTask<ReviewObject, Void, ReviewObject> {
+    public static class SentimentReview extends AsyncTask<ReviewObject, Void, ReviewObject> {
 
         private UpdateSentiment mUpdateSentiment;
+        private int mPos;
 
-        public SentimentReview(UpdateSentiment updateSentiment) {
+        public SentimentReview(UpdateSentiment updateSentiment, int pos) {
             mUpdateSentiment = updateSentiment;
+            mPos = pos;
         }
 
         @Override
@@ -66,7 +69,8 @@ public class SentimentUtils {
         @Override
         protected void onPostExecute(ReviewObject reviewObject) {
             super.onPostExecute(reviewObject);
-            mUpdateSentiment.updateSentiment(reviewObject);
+            Log.d("Sentiment", String.valueOf(reviewObject.sentiment));
+            mUpdateSentiment.updateSentiment(reviewObject, mPos);
         }
     }
 

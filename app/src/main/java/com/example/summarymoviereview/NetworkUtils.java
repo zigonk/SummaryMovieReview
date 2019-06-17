@@ -174,9 +174,9 @@ public class NetworkUtils {
 
     public static class FetchReviewByMovieId extends AsyncTask<Integer, Void, ArrayList<ReviewObject>> {
 
-        private ReviewFragment.UpdateReviewList mUpdateReviewList;
+        private MovieInfoActivity.UpdateReviewList mUpdateReviewList;
 
-        public FetchReviewByMovieId(ReviewFragment.UpdateReviewList updateReviewList) {
+        public FetchReviewByMovieId(MovieInfoActivity.UpdateReviewList updateReviewList) {
             mUpdateReviewList = updateReviewList;
         }
 
