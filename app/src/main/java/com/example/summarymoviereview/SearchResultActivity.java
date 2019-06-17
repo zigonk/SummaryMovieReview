@@ -24,7 +24,9 @@ public class SearchResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
         Log.d(SearchResultActivity.class.getSimpleName(), "Result Start");
-
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.logo_with_padding);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
         Intent intent = getIntent();
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -33,30 +35,23 @@ public class SearchResultActivity extends AppCompatActivity {
         }
 
 
-
-
-
         mResultRecyclerView = findViewById(R.id.result_recyclerview);
         mResultAdapter = new MovieInfoAdapter(this, mResult);
         RecyclerView.LayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mResultRecyclerView.setAdapter(mResultAdapter);
         mResultRecyclerView.setLayoutManager(layout);
         mResultRecyclerView.setHasFixedSize(true);
-//        mResultRecyclerView.setItemViewCacheSize(20);
-
-
 
 
         mUpdateSearchResults = new UpdateSearchResult() {
             @Override
             public void update(ArrayList<MovieObject> result) {
-//                Log.d("Size", String.valueOf(mResult.size()));
                 mResult  = result;
-//                Log.d("Size", String.valueOf(mResult.size()));
                 mResultAdapter.updateMovies(result);
             }
         };
         new NetworkUtils.FetchMovieByTitle(mUpdateSearchResults, 1).execute(mQuery);
+
 
     }
 

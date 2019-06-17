@@ -1,6 +1,7 @@
 package com.example.summarymoviereview;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -19,9 +20,9 @@ import java.util.List;
 
 public class SentimentUtils {
 
-    private final String CLOUD_API_KEY = "AIzaSyAD4B8m4rOm0fGAP91leIgPaWFucXzOiVI";
+    private static final String CLOUD_API_KEY = "AIzaSyAD4B8m4rOm0fGAP91leIgPaWFucXzOiVI";
 
-    final CloudNaturalLanguage naturalLanguageService =
+    static final CloudNaturalLanguage naturalLanguageService =
             new CloudNaturalLanguage.Builder(
                     AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(),
@@ -30,7 +31,15 @@ public class SentimentUtils {
                     new CloudNaturalLanguageRequestInitializer(CLOUD_API_KEY)
             ).build();
 
-    public class SentimentReview extends AsyncTask<ReviewObject, Void, ReviewObject> {
+    public static class SentimentReview extends AsyncTask<ReviewObject, Void, ReviewObject> {
+
+        private UpdateSentiment mUpdateSentiment;
+        private int mPos;
+
+        public SentimentReview(UpdateSentiment updateSentiment, int pos) {
+            mUpdateSentiment = updateSentiment;
+            mPos = pos;
+        }
 
         @Override
         protected ReviewObject doInBackground(ReviewObject... reviewObjects) {
@@ -60,6 +69,30 @@ public class SentimentUtils {
         @Override
         protected void onPostExecute(ReviewObject reviewObject) {
             super.onPostExecute(reviewObject);
+            Log.d("Sentiment", String.valueOf(reviewObject.sentiment));
+            mUpdateSentiment.updateSentiment(reviewObject, mPos);
+        }
+    }
+
+    public static ReviewObject SentimentReviewNotAsync(ReviewObject review) {
+        AnnotateTextRequest request = createRequest(review.content);
+
+        AnnotateTextResponse response = null;
+        try {
+            response = naturalLanguageService.documents()
+                    .annotateText(request).execute();
+            List<Entity> entityList = response.getEntities();
+            final float sentiment = response.getDocumentSentiment().getScore();
+
+            // set entity and sentiment for review
+
+            review.entities = combineEntities(entityList);
+            review.sentiment = sentiment;
+
+            return review;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

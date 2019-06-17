@@ -1,23 +1,25 @@
 package com.example.summarymoviereview;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
+
+import com.willy.ratingbar.ScaleRatingBar;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
 
 public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.ViewHolder> {
 
+    public static final String MOVIE_OBJECT_INTENT = "movie_object_intent";
     private TreeMap<Integer, Bitmap> mBitmaps;
     private ArrayList<MovieObject> mMovies;
     private Context mContext;
@@ -42,13 +44,18 @@ public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.View
     }
 
     public void updateMovies(ArrayList<MovieObject> movies) {
-        mMovies = movies;
+        ArrayList<MovieObject> filterMovies = new ArrayList<>();
+        for (int i = 0; i < movies.size(); i++) {
+            if (!movies.get(i).backdropPath.equals("null"))
+                filterMovies.add(movies.get(i));
+        }
+        mMovies = filterMovies;
         notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView mBackdropImageView;
-        private RatingBar mRatingBar;
+        private ScaleRatingBar mRatingBar;
         private TextView mTitleTextView;
         private int id = -1;
 
@@ -58,6 +65,15 @@ public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.View
             mBackdropImageView = v.findViewById(R.id.movie_cardview_backdrop);
             mRatingBar = v.findViewById(R.id.movie_cardview_ratingbar);
             mTitleTextView = v.findViewById(R.id.movie_cardview_title);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    Intent intent = new Intent(mContext, MovieInfoActivity.class);
+                    intent.putExtra(MOVIE_OBJECT_INTENT, mMovies.get(pos));
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 
@@ -83,7 +99,7 @@ public class MovieInfoAdapter extends RecyclerView.Adapter<MovieInfoAdapter.View
             viewHolder.mBackdropImageView.setImageBitmap(mBitmaps.get(i));
             viewHolder.id = i;
         } else if (!mBitmaps.containsKey(i) && !movieObject.backdropPath.equals("null")) {
-            new NetworkUtils.DownloadPosterTask(viewHolder.mBackdropImageView, mUpdateBackdrop, i).execute(movieObject.backdropPath);
+            new NetworkUtils.downloadBackdropMovieList(mUpdateBackdrop, i).execute(movieObject.backdropPath);
         }
         else if (movieObject.backdropPath.equals("null")) {
             viewHolder.mTitleTextView.setTextColor(Color.parseColor("#000000"));

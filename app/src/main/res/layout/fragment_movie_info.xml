@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#283546"
+    tools:context=".MovieInfoActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MovieInfoActivity">
+
+        <ImageView
+            android:id="@+id/movie_info_backdrop"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            android:tint="#6f000000"
+            app:layout_constraintDimensionRatio="w,1:2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/movie_info_poster"
+            android:layout_width="130dp"
+            android:layout_height="180dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="150dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/movie_info_backdrop" />
+
+        <TextView
+            android:id="@+id/movie_info_title"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/movie_info_poster"
+            app:layout_constraintTop_toBottomOf="@+id/movie_info_backdrop"
+            tools:text="Wonder Woman" />
+
+        <TextView
+            android:id="@+id/movie_info_release_date"
+            style="@style/TextInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/movie_info_poster"
+            app:layout_constraintTop_toBottomOf="@+id/movie_info_title"
+            tools:text="Realease Date" />
+
+        <TextView
+            android:id="@+id/textView3"
+            style="@style/TextHeadingSection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/summary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/movie_info_poster" />
+
+        <TextView
+            android:id="@+id/movie_info_summary"
+            style="@style/TextInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:ellipsize="end"
+            android:maxLines="4"
+            android:lineHeight="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            tools:text="You shall not pass. You shall not pass. You shall not pass. You shall not pass. You shall not pass. You shall not pass. You shall not pass. You shall not pass. You shall not pass. You shall not pass. You shall not pass. You shall not pass. You shall not pass. You shall not pass. You shall not pass." />
+
+        <TextView
+            android:id="@+id/textView5"
+            style="@style/TextHeadingSection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/oscar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/movie_info_summary" />
+
+        <com.cunoraz.tagview.TagView
+            android:id="@+id/movie_info_oscar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView5"
+            app:lineMargin="5dp"
+            app:tagMargin="5dp"
+            app:textPaddingBottom="5dp"
+            app:textPaddingLeft="8dp"
+            app:textPaddingRight="8dp"
+            app:textPaddingTop="5dp" />
+
+        <TextView
+            android:id="@+id/textView6"
+            style="@style/TextHeadingSection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/razzies"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/movie_info_oscar" />
+
+        <com.cunoraz.tagview.TagView
+            android:id="@+id/movie_info_razzies"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView6"
+            app:lineMargin="5dp"
+            app:tagMargin="5dp"
+            app:textPaddingBottom="5dp"
+            app:textPaddingLeft="8dp"
+            app:textPaddingRight="8dp"
+            app:textPaddingTop="5dp" />
+
+        <TextView
+            android:id="@+id/textView7"
+            style="@style/TextHeadingSection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/user_reviews"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/movie_info_razzies" />
+
+        <TextView
+            android:id="@+id/movie_info_preview_review"
+            style="@style/TextInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView7"
+            tools:text="TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView. TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView TextView. " />
+
+        <TextView
+            android:id="@+id/movie_info_seeall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/see_all"
+            android:textColor="#4253f4"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/movie_info_razzies" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

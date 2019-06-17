@@ -4,8 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
-import android.widget.ImageView;
 
 import org.json.JSONException;
 
@@ -15,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class NetworkUtils {
@@ -99,14 +101,12 @@ public class NetworkUtils {
 
     }
 
-    public static class DownloadPosterTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView mImageView;
+    public static class downloadBackdropMovieList extends AsyncTask<String, Void, Bitmap> {
         private UpdateBackdrops mUpdateBackdrop;
         private int mPosition;
 
 
-        DownloadPosterTask(ImageView imageView, UpdateBackdrops updateBackdrops, int i) {
-            mImageView = imageView;
+        downloadBackdropMovieList(UpdateBackdrops updateBackdrops, int i) {
             mUpdateBackdrop = updateBackdrops;
             mPosition = i;
         }
@@ -128,10 +128,38 @@ public class NetworkUtils {
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-//            mUpdateBackdrops.updateBackdrops(bitmap);
             mUpdateBackdrop.updateBackdrops(bitmap, mPosition);
             mUpdateBackdrop.updateBackdropOfImageView();
-//            mImageView.setImageBitmap(bitmap);
+        }
+    }
+
+    public static class downloadPosterMovie extends AsyncTask<String, Void, Bitmap> {
+
+        UpdatePoster updatePoster;
+
+        downloadPosterMovie(UpdatePoster updatePoster) {
+            this.updatePoster = updatePoster;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+            if (strings == null) return null;
+            ArrayList<Bitmap> bitmaps = new ArrayList<>();
+            String posterUrl = IMAGE_BASE_URL + strings[0];
+            Bitmap bitmap = null;
+            try {
+                InputStream in = new java.net.URL(posterUrl).openStream();
+                bitmap = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            updatePoster.updatePoster(bitmap);
         }
     }
 
@@ -178,15 +206,25 @@ public class NetworkUtils {
 
     public static class FetchReviewByMovieId extends AsyncTask<Integer, Void, ArrayList<ReviewObject>> {
 
+        private MovieInfoActivity.UpdateReviewList mUpdateReviewList;
+
+        public FetchReviewByMovieId(MovieInfoActivity.UpdateReviewList updateReviewList) {
+            mUpdateReviewList = updateReviewList;
+        }
+
         @Override
         protected ArrayList<ReviewObject> doInBackground(Integer... integers) {
             if (integers.length == 0) return null;
             Integer query = integers[0];
             URL reviewsUrl = buildGetMovieReview(query);
-
+            Log.d("URL", String.valueOf(reviewsUrl));
             try {
                 String response = getResponseFromHttpUrl(reviewsUrl);
-                return JsonUtils.convertJsonToReviewObjectList(response);
+                ArrayList<ReviewObject> reviewObjects = JsonUtils.convertJsonToReviewObjectList(response);
+                for (ReviewObject reviewObject : reviewObjects) {
+                    reviewObject = SentimentUtils.SentimentReviewNotAsync(reviewObject);
+                }
+                return reviewObjects;
             } catch (JSONException e) {
                 e.printStackTrace();
                 return null;
@@ -198,19 +236,24 @@ public class NetworkUtils {
 
         @Override
         protected void onPostExecute(ArrayList<ReviewObject> reviewObjects) {
-            if (reviewObjects == null) ;
-            else {
-                Log.d("Review content", reviewObjects.get(0).content);
-            }
+            mUpdateReviewList.update(reviewObjects);
+            Log.d("Finish_Download_Review", String.valueOf(reviewObjects.size()));
         }
     }
 
     public static class FetchTrendingMovie extends AsyncTask<Void ,Void, ArrayList<MovieObject>> {
 
+        private UpdateSearchResult mUpdateSearchResults;
+
+        public FetchTrendingMovie(UpdateSearchResult updateSearchResults) {
+            mUpdateSearchResults = updateSearchResults;
+        }
+
+
         @Override
         protected ArrayList<MovieObject> doInBackground(Void... voids) {
-            URL searchUrl = buildGetMovieTrendingUrl("movie", "all");
-
+            URL searchUrl = buildGetMovieTrendingUrl("movie", "day");
+            Log.d("URL", searchUrl.toString());
             try {
                 String response = getResponseFromHttpUrl(searchUrl);
                 return JsonUtils.convertJsonToMovieObjectList(response);
@@ -223,9 +266,17 @@ public class NetworkUtils {
             }
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
             super.onPostExecute(movieObjects);
+            movieObjects.sort(new Comparator<MovieObject>() {
+                @Override
+                public int compare(MovieObject o1, MovieObject o2) {
+                    return o2.releaseDate.compareTo(o1.releaseDate);
+                }
+            });
+            mUpdateSearchResults.update(movieObjects);
         }
     }
 }
