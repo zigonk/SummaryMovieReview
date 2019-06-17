@@ -131,6 +131,36 @@ public class NetworkUtils {
         }
     }
 
+    public static class downloadPosterMovie extends AsyncTask<String, Void, Bitmap> {
+
+        UpdatePoster updatePoster;
+
+        downloadPosterMovie(UpdatePoster updatePoster) {
+            this.updatePoster = updatePoster;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+            if (strings == null) return null;
+            ArrayList<Bitmap> bitmaps = new ArrayList<>();
+            String posterUrl = IMAGE_BASE_URL + strings[0];
+            Bitmap bitmap = null;
+            try {
+                InputStream in = new java.net.URL(posterUrl).openStream();
+                bitmap = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            updatePoster.updatePoster(bitmap);
+        }
+    }
+
 
 
     public static class FetchMovieByTitle extends AsyncTask<String, Void, ArrayList<MovieObject>> {
