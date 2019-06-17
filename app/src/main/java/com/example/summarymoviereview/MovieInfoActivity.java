@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.FrameLayout;
 
@@ -49,19 +50,25 @@ public class MovieInfoActivity extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
 
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        if ((getResources().getConfiguration().screenLayout &
-                Configuration.SCREENLAYOUT_SIZE_MASK) ==
-                Configuration.SCREENLAYOUT_SIZE_LARGE) {
+        float yInches= metrics.heightPixels/metrics.ydpi;
+        float xInches= metrics.widthPixels/metrics.xdpi;
+        double diagonalInches = Math.sqrt(xInches*xInches + yInches*yInches);
+        if (diagonalInches>=6.5){
             fragmentTransaction.replace(R.id.right_layout, ReviewFragment.newInstance(mReviews));
             mMovieInfoFragment = MovieInfoFragment.newInstance(mMovieObject, true);
             mRightLayout = findViewById(R.id.right_layout);
             Log.d("Reviews", String.valueOf(mReviews.size()));
             mReviewFragment = ReviewFragment.newInstance(mReviews);
             fragmentTransaction.replace(R.id.right_layout, mReviewFragment);
-        } else {
+            // 6.5inch device or bigger
+        }else{
+            // smaller device
             mMovieInfoFragment = MovieInfoFragment.newInstance(mMovieObject, false);
         }
+
         fragmentTransaction.replace(R.id.left_layout, mMovieInfoFragment);
 //
 //        mRightLayout = findViewById(R.id.right_layout);
