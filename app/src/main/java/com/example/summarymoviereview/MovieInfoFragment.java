@@ -1,6 +1,8 @@
 package com.example.summarymoviereview;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,40 +13,106 @@ import android.widget.TextView;
 
 import com.cunoraz.tagview.Tag;
 import com.cunoraz.tagview.TagView;
+import com.google.api.services.language.v1beta2.model.Entity;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 
-///**
-// * A simple {@link Fragment} subclass.
-// * Activities that contain this fragment must implement the
-// * {@link MovieInfoFragment.OnFragmentInteractionListener} interface
-// * to handle interaction events.
-// * Use the {@link MovieInfoFragment#newInstance} factory method to
-// * create an instance of this fragment.
-// */
 public class MovieInfoFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String MOVIE_OBJECT_PARAM = "param1";
+    public static final String REVIEW_INTENT = "review_intent";
+    private static final String MOVIE_OBJECT_PARAM = "movie_object";
 
 
     private MovieObject mMovieObject;
     private Bitmap moviePoster, movieBackdrop;
+    private static final String LARGE_SCREEN = "large_screen";
+    private ArrayList<ReviewObject> mReviews;
+    private ArrayList<Tag> positiveTags;
+    private ArrayList<Tag> negativeTags;
+    private TagView mOscars;
+    private TagView mNegativeTagView;
+    private TextView mPreview;
+    private boolean mLargeScreen;
+    private TextView mSeeAll;
 
-//    private OnFragmentInteractionListener mListener;
+    public static MovieInfoFragment newInstance(MovieObject movieObject, boolean largeScreen) {
+        MovieInfoFragment fragment = new MovieInfoFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(MOVIE_OBJECT_PARAM, movieObject);
+        args.putBoolean(LARGE_SCREEN, largeScreen);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public void updateSentiment(ArrayList<ReviewObject> reviews) {
+        mReviews = reviews;
+        combineSentiment(reviews);
+        mOscars.addTags(positiveTags);
+        mNegativeTagView.addTags(negativeTags);
+
+        if (mReviews.size() > 0)
+            mPreview.setText(mReviews.get(0).content);
+        else
+            mPreview.setText("No Reviews");
+    }
 
     public MovieInfoFragment() {
         // Required empty public constructor
     }
 
+    private void combineSentiment(ArrayList<ReviewObject> reviews) {
+        ArrayList<Entity> entityList = new ArrayList<>();
+        for (ReviewObject review : reviews) {
+            for (Entity entity : review.entities)
+                entityList.add(entity);
+        }
 
-    public static MovieInfoFragment newInstance(MovieObject movieObject) {
-        MovieInfoFragment fragment = new MovieInfoFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(MOVIE_OBJECT_PARAM, movieObject);
-        fragment.setArguments(args);
-        return fragment;
+        ArrayList<Entity> combinedEntity = SentimentUtils.combineEntities(entityList);
+        ArrayList<Entity> positiveEntities = new ArrayList<>();
+        ArrayList<Entity> negativeEntities = new ArrayList<>();
+        for (Entity entity : combinedEntity) {
+            if (entity.getSentiment().getScore() > 0)
+                positiveEntities.add(entity);
+            else
+                negativeEntities.add(entity);
+        }
+        positiveEntities.sort(new Comparator<Entity>() {
+            @Override
+            public int compare(Entity o1, Entity o2) {
+                if (o2.getSentiment().getScore() > o1.getSentiment().getScore())
+                    return 1;
+                else if (o2.getSentiment().getScore() < o1.getSentiment().getScore())
+                    return -1;
+                else
+                    return 0;
+            }
+        });
+
+        negativeEntities.sort(new Comparator<Entity>() {
+            @Override
+            public int compare(Entity o1, Entity o2) {
+                if (o1.getSentiment().getScore() > o2.getSentiment().getScore())
+                    return 1;
+                else if (o1.getSentiment().getScore() < o2.getSentiment().getScore())
+                    return -1;
+                else
+                    return 0;
+            }
+        });
+
+        for (int i = 0; i < 5 && i < positiveEntities.size(); i++) {
+            Tag tag = new Tag(positiveEntities.get(i).getName());
+            tag.layoutColor = Color.parseColor("#16c100");
+            positiveTags.add(tag);
+        }
+
+        for (int i = 0; i < 5 && i < negativeEntities.size(); i++) {
+            Tag tag = new Tag(negativeEntities.get(i).getName());
+            tag.layoutColor = Color.parseColor("#bf0019");
+            negativeTags.add(tag);
+        }
+
     }
 
     @Override
@@ -52,7 +120,10 @@ public class MovieInfoFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mMovieObject = (MovieObject) getArguments().getSerializable(MOVIE_OBJECT_PARAM);
+            mLargeScreen = getArguments().getBoolean(LARGE_SCREEN);
         }
+        negativeTags = new ArrayList<>();
+        positiveTags = new ArrayList<>();
     }
 
     @Override
@@ -60,17 +131,9 @@ public class MovieInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View v = inflater.inflate(R.layout.fragment_movie_info, container, false);
-        ArrayList<Tag> tags = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            if (i % 3 == 0)
-                tags.add(new Tag("Oscar"));
-            else if (i % 2 == 0)
-                tags.add(new Tag("Not oscars"));
-            else
-                tags.add(new Tag("Fucking Long Text, I don't Know"));
-        }
-        TagView oscar = v.findViewById(R.id.movie_info_oscar);
-        oscar.addTags(tags);
+
+        mOscars = v.findViewById(R.id.movie_info_oscar);
+        mNegativeTagView = v.findViewById(R.id.movie_info_razzies);
 
         UpdatePoster updatePoster = new UpdatePoster() {
             @Override
@@ -105,38 +168,32 @@ public class MovieInfoFragment extends Fragment {
         TextView summaryTV = v.findViewById(R.id.movie_info_summary);
         summaryTV.setText(mMovieObject.overview);
 
+        mPreview = v.findViewById(R.id.movie_info_preview_review);
+        mSeeAll = v.findViewById(R.id.movie_info_seeall);
+
+        if (mLargeScreen) {
+            TextView userreview = v.findViewById(R.id.textView7);
+            userreview.setVisibility(View.INVISIBLE);
+            mSeeAll.setVisibility(View.INVISIBLE);
+            mPreview.setVisibility(View.INVISIBLE);
+        } else {
+            mSeeAll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), ReviewActivity.class);
+
+                    ArrayList<ReviewObject> filterEntity = mReviews;
+                    for (ReviewObject review : filterEntity) {
+                        review.entities = null;
+                    }
+
+                    intent.putExtra(REVIEW_INTENT, filterEntity);
+                    startActivity(intent);
+                }
+            });
+        }
         return v;
     }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-//
-//    /**
-//     * This interface must be implemented by activities that contain this
-//     * fragment to allow an interaction in this fragment to be communicated
-//     * to the activity and potentially other fragments contained in that
-//     * activity.
-//     * <p>
-//     * See the Android Training lesson <a href=
-//     * "http://developer.android.com/training/basics/fragments/communicating.html"
-//     * >Communicating with Other Fragments</a> for more information.
-//     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
+
 }

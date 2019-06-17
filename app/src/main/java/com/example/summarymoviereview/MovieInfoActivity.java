@@ -17,8 +17,9 @@ public class MovieInfoActivity extends AppCompatActivity {
     private FrameLayout mRightLayout;
     private MovieObject mMovieObject;
     private ArrayList<ReviewObject> mReviews;
-    private UpdateSentiment mUpdateSentiment;
     private UpdateReviewList mUpdateReviewList;
+    private ReviewFragment mReviewFragment;
+    private MovieInfoFragment mMovieInfoFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,41 +28,46 @@ public class MovieInfoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         mMovieObject = (MovieObject) intent.getSerializableExtra(MovieInfoAdapter.MOVIE_OBJECT_INTENT);
 
-
-        mReviews = new ArrayList<>();
-
-        mUpdateSentiment = new UpdateSentiment() {
-            @Override
-            public void updateSentiment(ReviewObject result, int pos) {
-                mReviews.set(pos, result);
-            }
-        };
-
         mUpdateReviewList = new UpdateReviewList() {
             @Override
             public void update(ArrayList<ReviewObject> reviews) {
                 mReviews = reviews;
-                // mReviewAdapter.updateData(reviews);
+                if (mReviewFragment != null)
+                    mReviewFragment.updateReviews(reviews);
+                mMovieInfoFragment.updateSentiment(reviews);
+
             }
         };
+
+        mReviews = new ArrayList<>();
 
         new NetworkUtils.FetchReviewByMovieId(mUpdateReviewList).execute(mMovieObject.ID);
 
 
         mLeftLayout = findViewById(R.id.left_layout);
+        mRightLayout = findViewById(R.id.right_layout);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        fragmentTransaction.replace(R.id.left_layout, MovieInfoFragment.newInstance(mMovieObject));
+
 
         if ((getResources().getConfiguration().screenLayout &
                 Configuration.SCREENLAYOUT_SIZE_MASK) ==
                 Configuration.SCREENLAYOUT_SIZE_LARGE) {
-            mRightLayout = findViewById(R.id.right_layout);
             fragmentTransaction.replace(R.id.right_layout, ReviewFragment.newInstance(mReviews));
+            mMovieInfoFragment = MovieInfoFragment.newInstance(mMovieObject, true);
+            mRightLayout = findViewById(R.id.right_layout);
+            Log.d("Reviews", String.valueOf(mReviews.size()));
+            mReviewFragment = ReviewFragment.newInstance(mReviews);
+            fragmentTransaction.replace(R.id.right_layout, mReviewFragment);
+        } else {
+            mMovieInfoFragment = MovieInfoFragment.newInstance(mMovieObject, false);
         }
-        mRightLayout = findViewById(R.id.right_layout);
-        Log.d("Reviews", String.valueOf(mReviews.size()));
-        fragmentTransaction.replace(R.id.right_layout, ReviewFragment.newInstance(mReviews));
+        fragmentTransaction.replace(R.id.left_layout, mMovieInfoFragment);
+//
+//        mRightLayout = findViewById(R.id.right_layout);
+//        Log.d("Reviews", String.valueOf(mReviews.size()));
+//        mReviewFragment = ReviewFragment.newInstance(mReviews);
+//        fragmentTransaction.replace(R.id.right_layout, mReviewFragment);
         fragmentTransaction.commit();
 
 

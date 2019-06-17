@@ -74,6 +74,28 @@ public class SentimentUtils {
         }
     }
 
+    public static ReviewObject SentimentReviewNotAsync(ReviewObject review) {
+        AnnotateTextRequest request = createRequest(review.content);
+
+        AnnotateTextResponse response = null;
+        try {
+            response = naturalLanguageService.documents()
+                    .annotateText(request).execute();
+            List<Entity> entityList = response.getEntities();
+            final float sentiment = response.getDocumentSentiment().getScore();
+
+            // set entity and sentiment for review
+
+            review.entities = combineEntities(entityList);
+            review.sentiment = sentiment;
+
+            return review;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     // Combine two entity has the same name
     // New magnitude equal to sum of all old magnitude
     // New score equal to sum of all (old magnitude * old score)

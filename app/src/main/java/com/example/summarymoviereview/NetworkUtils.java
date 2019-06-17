@@ -218,7 +218,11 @@ public class NetworkUtils {
             Log.d("URL", String.valueOf(reviewsUrl));
             try {
                 String response = getResponseFromHttpUrl(reviewsUrl);
-                return JsonUtils.convertJsonToReviewObjectList(response);
+                ArrayList<ReviewObject> reviewObjects = JsonUtils.convertJsonToReviewObjectList(response);
+                for (ReviewObject reviewObject : reviewObjects) {
+                    reviewObject = SentimentUtils.SentimentReviewNotAsync(reviewObject);
+                }
+                return reviewObjects;
             } catch (JSONException e) {
                 e.printStackTrace();
                 return null;
